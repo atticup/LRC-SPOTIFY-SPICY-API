@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LRC spicetify</title>
+  <style>
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    }
+
+    body {
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #050518, #041b35 70%, #1d1e25);
+    overflow: hidden;
+    font-family: system-ui, sans-serif;
+    color: #e5e7eb;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    }
+
+    .box {
+      background: #020617;
+      padding: 32px;
+      border-radius: 12px;
+      width: 420px;
+      box-shadow: 0 0 40px rgba(0,0,0,.6);
+    }
+    h1 {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700; color:#45d2fd;
+    text-transform: uppercase;
+    word-spacing: 1px; letter-spacing:2px;
+    margin-bottom: 20px;
+    }
+    h1 span {
+    margin-top: 40px;
+    text-transform: none;
+    font-size:.75em;
+    font-weight: normal;
+    font-style: italic; font-family: "Playfair Display","Bookman",serif;
+    color:#999; letter-spacing:-0.005em; word-spacing:1px;
+    letter-spacing:none;
+    }
+    h1:before {
+    position: absolute;
+    left: 0;
+    bottom: 38px;
+    width: 60px;
+    height: 4px;
+    content: "";
+    left: 50%;
+    margin-left: -30px;
+    background-color: #dfdfdf;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 12px;
+      background: #020617;
+      color: #fff;
+      outline: 1px solid #334155;
+    }
+
+    .button {
+    margin: 10px auto;
+    padding: 10px 50px;
+    text-align: center;
+    text-transform: uppercase;
+    transition: 0.5s;
+    background-size: 200% auto;
+    color: white;
+    border-radius: 10px;
+    display: block;
+    border: 0px;
+    font-weight: 700;
+    box-shadow: 0px 0px 14px -7px #f09819;
+    background-image: linear-gradient(45deg, #FF512F 0%, #F09819  51%, #FF512F  100%);
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    }
+
+    .button:active {
+    transform: scale(0.95);
+    }
+
+    .button:hover {
+    animation: 1s glitch;
+    animation-timing-function: steps(2, end);
+        background-position: right center;
+    color: #fff;
+    text-decoration: none;
+    }
+
+    @keyframes glitch {
+        0% {
+            clip-path: var(--slice-1);
+            transform: translate(-5px, -3px);
+        }
+        10% {
+            clip-path: var(--slice-3);
+            transform: translate(3px, 3px);
+        }
+        20% {
+            clip-path: var(--slice-1);
+            transform: translate(-3px, 3px);
+        }
+        30% {
+            clip-path: var(--slice-3);
+            transform: translate(0px, 2px);
+        }
+        40% {
+            clip-path: var(--slice-2);
+            transform: translate(-2px, 0px);
+        }
+        50% {
+            clip-path: var(--slice-3);
+            transform: translate(2px, 0px);
+        }
+        60% {
+            clip-path: var(--slice-4);
+            transform: translate(2px, 3px);
+        }
+        70% {
+            clip-path: var(--slice-2);
+            transform: translate(-3px, 3px);
+        }
+        80% {
+            clip-path: var(--slice-5);
+            transform: translate(5px, -3px);
+        }
+        90% {
+            clip-path: var(--slice-1);
+            transform: translate(-3px, 0px);
+        }
+        100% {
+            clip-path: var(--slice-1);
+            transform: translate(0);
+        }
+    }
+    .info-box {
+      margin-top: 15px; 
+      background: #1a1c2a; 
+      padding: 10px; 
+      border-radius: 8px; 
+      font-size: 0.85em; 
+      color: #aaa;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Search Lyrics - Spotify</h1>
+    <form method="POST" action="/api/lyrics">
+      <input
+        name="song"
+        placeholder="put in spotify song id or link"
+        required
+      />
+      <button class="button" role="button">Find Lyrics</button>
+    </form>
+    <div class="info-box">
+        API: POST /api/lyrics with JSON body {"song": "the_spotify_id_or_link"}
+    </div>
+  </div>
+</body>
+</html>
