@@ -9,6 +9,6 @@ app.use(express.json());
 
 app.get("/version", versionHandler);
 app.get("/", lyricsHandler.page);
-app.post("/lyrics", lyricsHandler.search);
+app.post("/api/lyrics", lyricsHandler.search);
 
 module.exports = app;
