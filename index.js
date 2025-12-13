@@ -1,6 +1,6 @@
 const express = require("express");
-const versionHandler = require("./version");
-const lyricsHandler = require("./lyrics");
+const versionHandler = require("./api/version");
+const lyricsHandler = require("./api/lyrics");
 
 const app = express();
 
