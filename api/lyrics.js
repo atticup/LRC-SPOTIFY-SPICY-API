@@ -112,7 +112,9 @@ exports.search = async (req, res) => {
       {
         headers: {
           "Content-Type": "application/json",
-          "User-Agent": USER_AGENT
+          "User-Agent": USER_AGENT,
+          "spicylyrics-webauth": "Bearer crep",
+          "spicylyrics-version": "5.18.55"
         }
       }
     );
