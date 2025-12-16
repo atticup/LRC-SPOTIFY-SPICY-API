@@ -9,6 +9,12 @@ function getonlyid(input) {
   return match ? match[1] : null;
 }
 
+function formatLrcTime(seconds) {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  const cs = Math.floor((seconds - Math.floor(seconds)) * 100);
+  return `[${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${String(cs).padStart(2, '0')}]`;
+}
 
 exports.search = async (req, res) => {
   const songInput = req.body.song;
@@ -39,7 +45,43 @@ exports.search = async (req, res) => {
         }
       }
     );
+    if (req.headers.simple === "true") {
+      const data = response.data;
+      if (!data || !data.jobs || !data.jobs[0] || !data.jobs[0].result || !data.jobs[0].result.responseData) {
+        return res.status(404).send("lyrics were not found and api prob down kms");
+      }
+
+      const responseData = data.jobs[0].result.responseData;
+      const type = responseData.Type;
+      let output = "";
+
+      if (type === "Static") {
+        if (responseData.Lines && Array.isArray(responseData.Lines)) {
+          output = responseData.Lines.map(l => l.Text).join("\n");
+        }
+      } else if (type === "Line" || type === "Syllable") {
+        if (responseData.Content && Array.isArray(responseData.Content)) {
+          output = responseData.Content
+            .filter(item => item.Type === "Vocal")
+            .map(item => {
+              if (typeof item.StartTime === 'number' && item.Text) {
+                return `${formatLrcTime(item.StartTime)} ${item.Text}`;
+              }
+              return null;
+            })
+            .filter(Boolean)
+            .join("\n");
+        }
+      } else {
+        return res.status(400).send("wtf is that (yeah thats a failure so am i but shh no one knows)");
+      }
+
+      res.set("Content-Type", "text/plain");
+      res.send(output);
+      return;
+    }
     res.json(response.data);
+
   } catch (err) {
     res.status(500).json({
       error: "failed...",
