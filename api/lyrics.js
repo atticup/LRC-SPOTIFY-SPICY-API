@@ -64,8 +64,19 @@ exports.search = async (req, res) => {
           output = responseData.Content
             .filter(item => item.Type === "Vocal")
             .map(item => {
-              if (typeof item.StartTime === 'number' && item.Text) {
-                return `${formatLrcTime(item.StartTime)} ${item.Text}`;
+              let text = item.Text;
+              let startTime = item.StartTime;
+              if (type === "Syllable" && item.Lead && item.Lead.Syllables) {
+                text = item.Lead.Syllables.map(s => {
+                    return s.Text + (s.IsPartOfWord ? "" : " ");
+                }).join("").trim();
+                if (typeof startTime !== 'number' && item.Lead.Syllables.length > 0) {
+                  startTime = item.Lead.Syllables[0].StartTime;
+                }
+              }
+
+              if (typeof startTime === 'number' && text) {
+                return `${formatLrcTime(startTime)} ${text}`;
               }
               return null;
             })
