@@ -16,7 +16,11 @@ const limiter = rateLimit({
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "site", "index.html"));
 });
+
 app.use('/api/lyrics', limiter);
 app.post("/api/lyrics", lyricsH.search);
+
+app.use('/api/lrclib', limiter);
+app.post("/api/lrclib", lyricsH.lrclib);
 
 module.exports = app;
