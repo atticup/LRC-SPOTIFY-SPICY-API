@@ -16,79 +16,48 @@ function formatLrcTime(seconds) {
   return `[${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${String(cs).padStart(2, '0')}]`;
 }
 
-async function getSpotifyMetadata(id) {
-  try {
-    const { data } = await axios.get(`https://open.spotify.com/track/${id}`, {
-      headers: { "User-Agent": USER_AGENT }
-    });
-    const titleMatch = data.match(/<meta property="og:title" content="(.*?)" \/>/);
-    const artistMatch = data.match(/<meta property="og:description" content="(.*?) ·/);
-    const durationMatch = data.match(/"duration_ms":(\d+)/);
-
-    if (!titleMatch || !artistMatch || !durationMatch) return null;
-
-    return {
-      name: titleMatch[1],
-      artist: artistMatch[1],
-      durationMs: parseInt(durationMatch[1])
-    };
-  } catch (e) {
-    console.error("Spotify scrape failed:", e.message);
-    return null;
-  }
-}
-
 exports.lrclib = async (req, res) => {
-  const songInput = req.body.song;
-  const songId = getonlyid(songInput);
-
-  if (!songId) {
-    return res.status(400).json({ error: "Invalid Spotify track ID or link" });
+  const { trackName, artistName, duration } = req.body;
+  if (!trackName || !artistName) {
+    return res.status(400).json({ error: "Missing trackName or artistName" });
   }
 
   try {
-    const meta = await getSpotifyMetadata(songId);
-    if (!meta) {
-      return res.status(500).send("Could not fetch track metadata from Spotify. (Scraper broke or invalid ID)");
-    }
-    const query = `${meta.artist} ${meta.name}`;
+    const query = `${artistName} ${trackName}`;
     const { data: results } = await axios.get("https://lrclib.net/api/search", {
       params: { q: query },
-      headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.7444.176 Spotify/1.2.78.418 Safari/537.36" }
+      headers: { "User-Agent": "Spotify-Lyrics-ESP32-Proxy" }
     });
 
     if (!Array.isArray(results) || results.length === 0) {
       return res.status(404).send("No lyrics found on Lrclib.");
     }
-    
+
     let bestLyrics = "";
     let bestScore = -100;
     const candidates = results.slice(0, 12);
-    const targetDuration = meta.durationMs / 1000.0;
-
-    for (let i = 0; i < candidates.length; i++) {
-      const doc = candidates[i];
+    const targetDuration = parseFloat(duration);
+    for (const doc of candidates) {
       let score = 0;
-      
       const sLyrics = doc.syncedLyrics || "";
       const pLyrics = doc.plainLyrics || "";
       const hasSynced = sLyrics.length > 10;
       const hasPlain = pLyrics.length > 10;
-
       if (hasSynced) score = 10;
       else if (hasPlain) score = 1;
       else continue;
-
-      const lrcDuration = doc.duration;
-      const diff = Math.abs(lrcDuration - targetDuration);
-
-      if (diff < 2.0) score += 2;
-      else if (diff < 6.0) score += 1;
+      if (targetDuration > 0) {
+        const lrcDuration = doc.duration;
+        const diff = Math.abs(lrcDuration - targetDuration);
+        
+        if (diff < 2.0) score += 2; 
+        else if (diff < 6.0) score += 1; 
+      }
 
       if (score > bestScore) {
         bestScore = score;
         bestLyrics = hasSynced ? sLyrics : pLyrics;
-        if (score >= 12) break;
+        if (score >= 12) break; 
       }
     }
 
@@ -104,7 +73,6 @@ exports.lrclib = async (req, res) => {
     return res.status(500).json({ error: "Internal Error", details: err.message });
   }
 };
-
 exports.search = async (req, res) => {
   const songInput = req.body.song;
   const songId = getonlyid(songInput);
