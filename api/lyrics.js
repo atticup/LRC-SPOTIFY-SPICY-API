@@ -93,12 +93,15 @@ exports.search = async (req, res) => {
             }
           }
         ],
+        "client": {
+            "version": "5.18.55"
+        }
       },
       {
         headers: {
           "Content-Type": "application/json",
           "User-Agent": USER_AGENT,
-          "spicylyrics-webauth": "Bearer funny"
+          "spicylyrics-webauth": "Bearer BQBinRPaI2JL5_jBDi2WVQ3xW1wGxQwlLVtGe1WbyYXkhJkD0JUnhpdQGTet8MyV6J_VUyaV7IAvhgQbNinA9m0OXLbuLCuJ8MB5phi8fFnhiQtH5GssMcXVwMdwv4GA_dG_QxvvKSiaOaS4qWjyCBE7qKqcf4YI_uGegaYINkaoFe0GEBS5aBx7g6BEgG_DXVanzAc-gOVfTfkgZ3PUhowZdq94Z76yQvQoPZbUGFiT3UCXGfDpDGdAaP1HfltikIsgAijuMWq4vLharE8JYJNsrgGm-js"
         }
       }
     );
